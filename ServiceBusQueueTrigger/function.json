@@ -6,7 +6,7 @@
         "type": "serviceBusTrigger",
         "direction": "in",
         "queueName": "notificationqueue",
-        "connection": "p3-trungvq7_SERVICEBUS"
+        "connection": "techconf_SERVICEBUS"
       }
     ]
   }
