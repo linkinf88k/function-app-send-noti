@@ -1,0 +1,4 @@
+azure-functions
+sendgrid
+psycopg2-binary
+pytz
