@@ -1,6 +1,7 @@
 import logging
 import azure.functions as func
 import psycopg2
+from datetime import datetime
 
 def main(msg: func.ServiceBusMessage):
     notification_id = msg.get_body().decode('utf-8')
@@ -34,9 +35,28 @@ def main(msg: func.ServiceBusMessage):
         total_notified += 1
 
     # Update notification status
-    cursor.execute("UPDATE notifications SET status = 'Notified', total_attendees_notified = %s WHERE id = %s", (total_notified, notification_id))
+    completed_date = datetime.utcnow()
+    status = 'Notified {} attendees'.format(len(attendees))
+    
+    notification_update_query = '''UPDATE notification 
+                            SET completed_date = %s, status = %s 
+                            WHERE id = %s;'''
+    
+    cursor.execute(notification_update_query, (completed_date, status, notification_id))
     conn.commit()
 
     cursor.close()
     conn.close()
     logging.info(f"Total attendees notified: {total_notified}")
+
+def send_email(email, subject, body):
+    from_email=os.environ.get('ADMIN_EMAIL_ADDRESS'),
+    password=os.environ.get('ADMIN_EMAIL_PASS'),
+    msg = MIMEText(body)
+    msg['Subject'] = subject
+    msg['From'] = from_email
+    msg['To'] = ', '.join(email)
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp_server:
+        smtp_server.login(from_email, password)
+        smtp_server.sendmail(from_email, email, msg.as_string())
+    print("Message sent!")
