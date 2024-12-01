@@ -1,0 +1,12 @@
+{
+    "scriptFile": "__init__.py",
+    "bindings": [
+      {
+        "name": "msg",
+        "type": "serviceBusTrigger",
+        "direction": "in",
+        "queueName": "notificationqueue",
+        "connection": "p3-trungvq7_techconf_SERVICEBUS"
+      }
+    ]
+  }
